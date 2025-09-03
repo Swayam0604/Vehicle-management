@@ -1,0 +1,28 @@
+{% extends 'pages/base.html' %}
+{% block content %}
+<section class="hero">
+  <div class="hero-content">
+    <h1>🚗 Vehicle Management System</h1>
+    <p>Manage and track your vehicles easily with a modern, role-based system.</p>
+    <a href="{% url 'vehicle_list' %}" class="btn-primary">View Vehicles</a>
+  </div>
+</section>
+
+<section class="features">
+  <h2>✨ Features</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h3>🔐 Role Based Access</h3>
+      <p>SuperAdmin, Admin, and User roles for secure access.</p>
+    </div>
+    <div class="feature-card">
+      <h3>📋 Vehicle Records</h3>
+      <p>Add, update, and manage all types of vehicles in one place.</p>
+    </div>
+    <div class="feature-card">
+      <h3>⏱ Real-Time Updates</h3>
+      <p>Automatic timestamps keep everything updated instantly.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

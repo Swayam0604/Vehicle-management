@@ -1,0 +1,420 @@
+{% extends 'vehicles/base.html' %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'vehicle_list' %}" class="text-decoration-none">
+                    <i class="fas fa-car me-1"></i>Vehicles
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                {% if 'Add' in form_title %}Add Vehicle{% else %}Edit Vehicle{% endif %}
+            </li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Form Header -->
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-header bg-primary text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="mb-0 fw-bold">
+                                {% if 'Add' in form_title %}
+                                    <i class="fas fa-plus-circle me-2"></i>{{ form_title }}
+                                {% else %}
+                                    <i class="fas fa-edit me-2"></i>{{ form_title }}
+                                {% endif %}
+                            </h3>
+                            <p class="mb-0 opacity-75">
+                                {% if 'Add' in form_title %}
+                                    Fill in the details to add a new vehicle to your fleet
+                                {% else %}
+                                    Update the vehicle information below
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-car fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Form -->
+                    <form method="post" id="vehicleForm" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Display form errors if any -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger mb-4">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <!-- Vehicle Number -->
+                            <div class="col-md-6 mb-4">
+                                <label for="{{ form.vehicle_number.id_for_label }}" 
+                                       class="form-label fw-bold text-dark">
+                                    <i class="fas fa-hashtag me-2 text-primary"></i>Vehicle Number
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-id-card text-muted"></i>
+                                    </span>
+                                    {{ form.vehicle_number }}
+                                </div>
+                                {% if form.vehicle_number.errors %}
+                                    <div class="text-danger small mt-1">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.vehicle_number.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Enter the official vehicle registration number
+                                </small>
+                            </div>
+
+                            <!-- Vehicle Model -->
+                            <div class="col-md-6 mb-4">
+                                <label for="{{ form.vehicle_model.id_for_label }}" 
+                                       class="form-label fw-bold text-dark">
+                                    <i class="fas fa-car me-2 text-primary"></i>Vehicle Model
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-cog text-muted"></i>
+                                    </span>
+                                    {{ form.vehicle_model }}
+                                </div>
+                                {% if form.vehicle_model.errors %}
+                                    <div class="text-danger small mt-1">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.vehicle_model.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    e.g., Honda City, Toyota Innova, Hero Splendor
+                                </small>
+                            </div>
+
+                            <!-- Vehicle Type -->
+                            <div class="col-md-6 mb-4">
+                                <label for="{{ form.vehicle_type.id_for_label }}" 
+                                       class="form-label fw-bold text-dark">
+                                    <i class="fas fa-tags me-2 text-primary"></i>Vehicle Type
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    {{ form.vehicle_type }}
+                                    <div class="vehicle-type-preview mt-2" id="typePreview">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Select vehicle type to see preview
+                                        </small>
+                                    </div>
+                                </div>
+                                {% if form.vehicle_type.errors %}
+                                    <div class="text-danger small mt-1">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.vehicle_type.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Vehicle Description -->
+                            <div class="col-12 mb-4">
+                                <label for="{{ form.vehicle_description.id_for_label }}" 
+                                       class="form-label fw-bold text-dark">
+                                    <i class="fas fa-align-left me-2 text-primary"></i>Description
+                                </label>
+                                {{ form.vehicle_description }}
+                                {% if form.vehicle_description.errors %}
+                                    <div class="text-danger small mt-1">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.vehicle_description.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Additional details about the vehicle (optional)
+                                </small>
+                                <div class="mt-1">
+                                    <small class="text-muted float-end">
+                                        <span id="charCount">0</span> characters
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr class="my-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-muted small">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Fields marked with <span class="text-danger">*</span> are required
+                                    </div>
+                                    <div class="btn-group gap-2">
+                                        <a href="{% url 'vehicle_list' %}" 
+                                           class="btn btn-secondary btn-lg px-4">
+                                            <i class="fas fa-times me-2"></i>Cancel
+                                        </a>
+                                        <button type="submit" 
+                                                class="btn btn-success btn-lg px-4" 
+                                                id="submitBtn">
+                                            <i class="fas fa-save me-2"></i>
+                                            {% if 'Add' in form_title %}Add Vehicle{% else %}Update Vehicle{% endif %}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h6 class="text-dark fw-bold mb-3">
+                        <i class="fas fa-lightbulb me-2 text-warning"></i>Tips for adding vehicles
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Use the exact registration number from documents
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Include brand and model name for clarity
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Select the appropriate vehicle type
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Add description for easy identification
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation and enhancement
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('vehicleForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const vehicleTypeSelect = form.querySelector('select[name="vehicle_type"]');
+    const descriptionTextarea = form.querySelector('textarea[name="vehicle_description"]');
+    const charCount = document.getElementById('charCount');
+    const typePreview = document.getElementById('typePreview');
+
+    // Add Bootstrap classes to form elements
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.classList.add('form-control');
+        if (input.tagName === 'SELECT') {
+            input.classList.add('form-select');
+        }
+    });
+
+    // Character counter for description
+    if (descriptionTextarea && charCount) {
+        function updateCharCount() {
+            const length = descriptionTextarea.value.length;
+            charCount.textContent = length;
+            
+            if (length > 500) {
+                charCount.classList.add('text-danger');
+            } else if (length > 400) {
+                charCount.classList.add('text-warning');
+                charCount.classList.remove('text-danger');
+            } else {
+                charCount.classList.remove('text-danger', 'text-warning');
+            }
+        }
+        
+        descriptionTextarea.addEventListener('input', updateCharCount);
+        updateCharCount(); // Initial count
+    }
+
+    // Vehicle type preview
+    if (vehicleTypeSelect && typePreview) {
+        function updateTypePreview() {
+            const selectedValue = vehicleTypeSelect.value;
+            let previewHTML = '';
+            
+            switch(selectedValue) {
+                case 'Two':
+                    previewHTML = '<span class="badge bg-info-subtle text-info"><i class="fas fa-motorcycle me-1"></i>Two Wheeler</span>';
+                    break;
+                case 'Three':
+                    previewHTML = '<span class="badge bg-warning-subtle text-warning"><i class="fas fa-truck me-1"></i>Three Wheeler</span>';
+                    break;
+                case 'Four':
+                    previewHTML = '<span class="badge bg-success-subtle text-success"><i class="fas fa-car me-1"></i>Four Wheeler</span>';
+                    break;
+                default:
+                    previewHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>Select vehicle type to see preview</small>';
+            }
+            
+            typePreview.innerHTML = previewHTML;
+        }
+        
+        vehicleTypeSelect.addEventListener('change', updateTypePreview);
+        updateTypePreview(); // Initial preview
+    }
+
+    // Form submission handling
+    form.addEventListener('submit', function(e) {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+        submitBtn.disabled = true;
+        
+        // Re-enable button after 3 seconds in case of error
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>{% if "Add" in form_title %}Add Vehicle{% else %}Update Vehicle{% endif %}';
+        }, 3000);
+    });
+
+    // Auto-format vehicle number (convert to uppercase)
+    const vehicleNumberInput = form.querySelector('input[name="vehicle_number"]');
+    if (vehicleNumberInput) {
+        vehicleNumberInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    }
+
+    // Real-time validation
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.hasAttribute('required') && !this.value.trim()) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+    });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(event) {
+    // Ctrl+S to save
+    if (event.ctrlKey && event.key === 's') {
+        event.preventDefault();
+        document.getElementById('vehicleForm').submit();
+    }
+    // Escape to cancel
+    if (event.key === 'Escape') {
+        window.location.href = "{% url 'vehicle_list' %}";
+    }
+});
+</script>
+
+<style>
+.form-control, .form-select {
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    transform: translateY(-1px);
+}
+
+.form-control.is-valid {
+    border-color: #198754;
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+.input-group-text {
+    border: 2px solid #e9ecef;
+    border-right: none;
+}
+
+.form-control:focus + .input-group-text,
+.input-group-text + .form-control:focus {
+    border-color: #0d6efd;
+}
+
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+.bg-info-subtle {
+    background-color: rgba(13, 202, 240, 0.1) !important;
+}
+
+.bg-warning-subtle {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+.bg-success-subtle {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+.text-info { color: #0dcaf0 !important; }
+.text-warning { color: #ffc107 !important; }
+.text-success { color: #198754 !important; }
+
+.vehicle-type-preview {
+    min-height: 1.5rem;
+}
+
+/* Custom scrollbar for textarea */
+textarea::-webkit-scrollbar {
+    width: 8px;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+</style>
+{% endblock %}
