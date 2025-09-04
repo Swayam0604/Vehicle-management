@@ -130,9 +130,12 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
+
+
+# Add this to ensure login redirects work correctly
+LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-
 
 # For real email (use Gmail or SMTP)
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

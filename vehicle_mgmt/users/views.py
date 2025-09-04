@@ -99,17 +99,22 @@ def login(request):
 
         try:
             user_obj = CustomUser.objects.get(Q(username=login_input) | Q(email=login_input))
+            
+            # Check if user exists but is inactive
+            if not user_obj.is_active:
+                messages.error(request, "Your account is not activated. Please check your email for OTP verification.")
+                return render(request, "users/login.html", {"form": form})
+            
+            # Now authenticate the active user
             user = authenticate(request, username=user_obj.username, password=password)
+            
         except CustomUser.DoesNotExist:
             user = None
 
         if user is not None:
-            if user.is_active:
-                auth_login(request, user)
-                messages.success(request, f"Welcome back, {user.username}!")
-                return redirect("vehicle_list")  # Redirect after login
-            else:
-                messages.error(request, "Your account is not activated. Please check your email for OTP verification.")
+            auth_login(request, user)
+            messages.success(request, f"Welcome back, {user.username}!")
+            return redirect("vehicle_list")  # Redirect after login
         else:
             messages.error(request, "Invalid username/email or password.")
 
