@@ -2,8 +2,8 @@ from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Vehicle, CustomUser
-from .forms import VehicleForm, CustomUserRegistrationForm
+from .models import Vehicle
+from .forms import VehicleForm
 from django.core.mail import send_mail
 from django.contrib import messages
 import random
@@ -13,9 +13,17 @@ from django.conf import settings
 # CUSTOM ROLE-BASED ACCESS MIXIN
 class RoleRequiredMixin(UserPassesTestMixin):
     allowed_roles = []
+    permission_denied_message = "You don't have permission to access this page."
+    
     def test_func(self):
         return self.request.user.is_authenticated and self.request.user.role in self.allowed_roles
     
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            messages.error(self.request, self.permission_denied_message)
+            return redirect('vehicle_list')
+        else:
+            return redirect('login')
 #  VEHICLE LIST VIEW (ALL ROLES CAN VIEW)
 class VehicleListView(LoginRequiredMixin,RoleRequiredMixin,ListView):
     model = Vehicle
@@ -26,7 +34,19 @@ class VehicleListView(LoginRequiredMixin,RoleRequiredMixin,ListView):
 # MAPING URL TO TEMPLATE (VIEW)
 def vehicle_list(request):
     vehicles = Vehicle.objects.all()
-    return render(request,"vehicles/list.html",{"vehicles":vehicles})
+
+    # COUNT VEHICLES BY TYPE
+    two_wheeler_count = Vehicle.objects.filter(vehicle_type='Two').count()
+    three_wheeler_count = Vehicle.objects.filter(vehicle_type='Three').count()
+    four_wheeler_count = Vehicle.objects.filter(vehicle_type='Four').count()
+
+    context = {
+        'vehicles' : vehicles,
+        'two_wheeler_count' : two_wheeler_count,
+        'three_wheeler_count' : three_wheeler_count,
+        'four_wheeler_count' : four_wheeler_count
+    }
+    return render(request,"vehicles/list.html",context)
 
 # VEHICLE DETAIL VIEW (ALL ROLES CAN VIEW)
 class VehicleDetailView(LoginRequiredMixin,RoleRequiredMixin,DetailView):
@@ -95,47 +115,3 @@ def vehicle_delete(request, pk):
         return redirect("vehicle_list")
     return render(request, "vehicles/delete.html", {"vehicle": vehicle})
 
-
-#  TEMPORARY STORING THE OTP'S (BETTER USE CACHE /REDIS IN REAL APPS)
-otp_storage = {}
-
-def register(request):
-    if request.method == "POST":
-        form = CustomUserRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False   # DEACTIVATE UNTIL OTP IS VERIFIED
-            user.save()
-
-            # GENERATE OTP 
-            otp = random.randint(100000, 999999)
-            otp_storage[user.username] = otp
-
-            # SEND OTP VIA EMAIL
-            send_mail(
-                subject="Your OTP for Vehicle Management System",
-                message=f"Hello {user.username}, your OTP is {otp}",
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
-
-            messages.success(request, "OTP sent to your email. Please verify.")
-            return redirect("verify_otp", username=user.username)
-    else:
-        form = CustomUserRegistrationForm()
-    return render(request, "users/register.html", {"form": form})
-
-def verify_otp(request, username):
-    if request.method == "POST":
-        entered_otp = request.POST.get("otp")
-        if username in otp_storage and str(otp_storage[username]) == entered_otp:
-            user = CustomUser.objects.get(username=username)
-            user.is_active = True
-            user.save()
-            del otp_storage[username]  # REMOVE OTP FROM STORAGE CLEANUP
-            messages.success(request, "Your account has been activated. Please login.")
-            return redirect("login")
-        else:
-            messages.error(request, "Invalid OTP. Please try again.")
-    return render(request, "users/verify_otp.html", {"username": username})

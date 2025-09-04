@@ -1,0 +1,66 @@
+{% extends "pages/base.html" %}
+
+{% block title %}Verify OTP - Vehicle Management System{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="text-center mb-0">Verify Your Account</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-center mb-4">
+                        We've sent a verification code to your email address.<br>
+                        Please enter the 6-digit code for <strong>{{ username }}</strong>
+                    </p>
+
+                    <!-- Display Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="otp" class="form-label">
+                                <strong>Verification Code</strong>
+                            </label>
+                            <input type="text" 
+                                   name="otp" 
+                                   id="otp" 
+                                   class="form-control text-center" 
+                                   placeholder="Enter 6-digit code"
+                                   maxlength="6"
+                                   required
+                                   autofocus>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check-circle"></i> Verify Account
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <p class="mb-0">Didn't receive the code? 
+                            <a href="{% url 'register' %}" class="text-decoration-none">
+                                <strong>Register again</strong>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

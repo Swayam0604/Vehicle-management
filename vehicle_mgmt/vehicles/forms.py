@@ -1,6 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from .models import Vehicle,CustomUser
+from .models import Vehicle
 class VehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
@@ -11,9 +10,3 @@ class VehicleForm(forms.ModelForm):
             "vehicle_description",
             ]
         
-class CustomUserRegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
-    class Meta:
-        model = CustomUser
-        fields = ("username", "email", "password1", "password2")

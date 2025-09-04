@@ -23,5 +23,5 @@ urlpatterns = [
     path("", views.home, name="home"),   # Home page
     path("about/", views.about, name="about"),  # About page
     path("vehicles/", include("vehicles.urls")),  # Vehicle app
-    path('accounts/', include('django.contrib.auth.urls')),    # for login and logout 
+    path("users/", include("users.urls")),  # for login and logout 
 ]
