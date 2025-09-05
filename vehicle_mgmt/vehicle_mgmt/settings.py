@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vm4+n&ne%jtw(a=0ndw$0-(fraq_4fkxr(p$%)vnp$^h5lit2r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["Swayam0604.pythonanywhere.com"]
+CSRF_TRUSTED_ORIGINS = ["https://Swayam0604.pythonanywhere.com"]
 
 # Application definition
 
@@ -128,7 +128,7 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
-
+STATIC_ROOT = BASE_DIR / "staticfiles" 
 
 
 
