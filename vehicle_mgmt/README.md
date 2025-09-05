@@ -1,7 +1,17 @@
-
 # 🚗 Vehicle Management System
 
 A comprehensive Django-based Vehicle Management System with **role-based access control**, **OTP email verification**, and **extensive testing**.
+
+-----
+
+## 🌐 **Live Demo**
+
+**🔗 Live Application**: [https://swayam0604.pythonanywhere.com](https://swayam0604.pythonanywhere.com)
+
+**Test the application with different user roles:**
+- Register as SuperAdmin/Admin/User to experience role-based access
+- Complete OTP email verification process
+- Explore CRUD operations based on your role permissions
 
 -----
 
@@ -39,10 +49,12 @@ A comprehensive Django-based Vehicle Management System with **role-based access 
 ## ⚙️ **Tech Stack**
 
   - **Backend**: Python 3.x, Django 5.x
-  - **Database**: SQLite (development)
+  - **Database**: SQLite (development/production)
   - **Frontend**: HTML5, CSS3, Bootstrap 5, JavaScript
+  - **Deployment**: PythonAnywhere
   - **Testing**: Django TestCase, OOP-based testing
   - **Email**: Django SMTP backend
+  - **Version Control**: Git
 
 -----
 
@@ -96,6 +108,34 @@ python manage.py runserver
 ```
 
 Visit: `http://127.0.0.1:8000`
+
+-----
+
+## 🌍 **Deployment**
+
+### **Live Deployment on PythonAnywhere**
+
+The application is successfully deployed on PythonAnywhere with the following configuration:
+
+### **Deployment Steps:**
+1. **Upload project files** to PythonAnywhere
+2. **Setup virtual environment** and install dependencies
+3. **Configure static files mapping**:
+   - URL: `/static/`
+   - Directory: `/home/Swayam0604/vehicle_mgmt/vehicle_mgmt/staticfiles/`
+4. **Run database migrations**: `python manage.py migrate`
+5. **Collect static files**: `python manage.py collectstatic`
+6. **Configure WSGI file** for Django application
+7. **Set up email backend** for OTP verification
+
+### **Production Settings:**
+- **Static Files**: Served via PythonAnywhere's static file mapping
+- **Database**: SQLite database for simplicity
+- **Email Service**: Gmail SMTP for OTP delivery
+- **Security**: CSRF protection and secure session management
+
+### **Access the Live Application:**
+Visit [https://swayam0604.pythonanywhere.com](https://swayam0604.pythonanywhere.com) to interact with the deployed vehicle management system.
 
 -----
 
@@ -166,8 +206,6 @@ python manage.py test --verbosity=2
 # Run specific app tests
 python manage.py test users
 python manage.py test vehicles
-
-
 ```
 
 -----
@@ -236,6 +274,7 @@ python manage.py test vehicles
 ✅ **SQLite database** integration
 ✅ **Custom user model** with roles
 ✅ **Object-oriented** code architecture
+✅ **Production deployment** on PythonAnywhere
 
 -----
 
@@ -275,6 +314,7 @@ This project is developed for educational purposes as part of a Django developme
 
 **📧 Contact**: [Your Email]
 **🔗 Repository**: [https://github.com/Swayam0604/Vehicle-management.git](https://github.com/Swayam0604/Vehicle-management.git)
+**🌐 Live Demo**: [https://swayam0604.pythonanywhere.com](https://swayam0604.pythonanywhere.com)
 
 -----
 
@@ -285,5 +325,4 @@ Django>=5.0,<6.0
 sqlparse>=0.4.2
 asgiref>=3.5,<4
 pytz>=2021.1
-
 ```
